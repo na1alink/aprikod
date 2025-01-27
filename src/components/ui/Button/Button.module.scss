@@ -1,0 +1,13 @@
+.button {
+  color: #fff;
+  background-color: var(--primary-color);
+  text-decoration: none;
+  border: none;
+  outline: none;
+  text-transform: uppercase;
+  transition: color 0.3s ease-in-out;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  height: 100%;
+}

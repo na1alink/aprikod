@@ -1,0 +1,31 @@
+@use "../../../assets/styles/utils/mixins";
+
+:root {
+  --font-family: "Play", sans-serif;
+  --second-family: "Open Sans", sans-serif;
+
+  --primary-color: #a75555;
+  --secondary-color: #393b3c;
+
+  --white: #ffffff;
+
+  // процент выполения задачи
+  --low: #c82020; //  низкий
+  --high: #a59400; //  средина
+  --average: #308e21; //  выволнена
+
+  --container-padding: 80px;
+  --container-width: 1440px;
+
+  @include mixins.breakpoint(l) {
+    --container-padding: 60px;
+  }
+
+  @include mixins.breakpoint(m) {
+    --container-padding: 40px;
+  }
+
+  @include mixins.breakpoint(xs) {
+    --container-padding: 20px;
+  }
+}
