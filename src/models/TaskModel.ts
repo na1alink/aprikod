@@ -21,43 +21,49 @@ class TaskModel {
     makeAutoObservable(this);
   }
 
-  // Метод для изменения названия задачи
   setTitle(newTitle: string) {
     this.title = newTitle;
   }
 
-  // Добавление подзадачи
   addSubtask(title: string) {
-    if (this.subtasks.length === 0) {
-      // Проверяем, что у текущей задачи нет подзадач
-      this.subtasks.push(new TaskModel(title));
-    } else {
-      console.warn(
-        "Невозможно добавить подзадачу: вложенность ограничена двумя уровнями."
-      );
+    this.subtasks.push(new TaskModel(title));
+  }
+
+  checkSubtasksCompletion() {
+    const allSubtasksCompleted = this.subtasks.every(
+      (subtask) => subtask.isCompleted
+    );
+    if (allSubtasksCompleted && !this.isCompleted) {
+      this.setCompleted(true);
+    } else if (!allSubtasksCompleted && this.isCompleted) {
+      this.setCompleted(false);
     }
   }
 
-  // Переключение статуса выполнения задачи
   toggleCompletion() {
     this.isCompleted = !this.isCompleted;
     if (this.isCompleted) {
       this.subtasks.forEach((subtask) => subtask.setCompleted(true));
+    } else {
+      this.subtasks.forEach((subtask) => subtask.setCompleted(false));
+    }
+    this.checkSubtasksCompletion();
+  }
+
+  setCompleted(value: boolean) {
+    this.isCompleted = value;
+    if (value) {
+      this.subtasks.forEach((subtask) => subtask.setCompleted(value));
+    } else {
+      this.subtasks.forEach((subtask) => subtask.setCompleted(value));
+      this.checkSubtasksCompletion();
     }
   }
 
-  // Установка статуса выполнения задачи
-  setCompleted(value: boolean) {
-    this.isCompleted = value;
-    this.subtasks.forEach((subtask) => subtask.setCompleted(value));
-  }
-
-  // Удаление подзадачи по id
   removeSubtask(subtaskId: string) {
     this.subtasks = this.subtasks.filter((subtask) => subtask.id !== subtaskId);
   }
 
-  // Преобразование задачи в JSON
   toJSON(): TaskData {
     return {
       id: this.id,

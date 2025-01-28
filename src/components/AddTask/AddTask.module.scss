@@ -1,7 +1,58 @@
+@use "../../assets/styles/utils/mixins";
+
 .addTask {
   display: flex;
   align-items: center;
   gap: 20px;
 
   margin-bottom: 40px;
+
+  @include mixins.breakpoint(s) {
+    margin-bottom: 20px;
+  }
+
+  &__button {
+    padding: 15px 20px;
+  }
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+    button {
+      max-width: 200px;
+    }
+  }
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.subtasksSection {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.subtask {
+  padding: 5px;
+  background-color: #f0f0f0;
+  border-radius: 3px;
+}
+
+.modalBottom {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+
+  button {
+    padding: 10px;
+    height: 100%;
+    font-size: 18px;
+  }
 }

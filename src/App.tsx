@@ -5,10 +5,11 @@ import taskStore from "./stores/taskStore";
 import Header from "./components/layout/Header/Header";
 import LayoutContainer from "./components/layout/LayoutContainer/LayoutContainer";
 import AddTask from "./components/AddTask/AddTask";
+import TaskModel from "./models/TaskModel";
 
 const App: React.FC = () => {
-  const handleAddTask = (title: string) => {
-    taskStore.addTask(title); // Добавление задачи в хранилище
+  const handleAddTask = (title: string, subtasks: TaskModel[] = []) => {
+    taskStore.addTask(title, subtasks);
   };
 
   return (
@@ -17,7 +18,7 @@ const App: React.FC = () => {
       <main>
         <section>
           <LayoutContainer>
-            <AddTask onAddTask={handleAddTask} placeholder="Добавить задачу" />
+            <AddTask onAddTask={handleAddTask} />
             <TaskList />
           </LayoutContainer>
         </section>

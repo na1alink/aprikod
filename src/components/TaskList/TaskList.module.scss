@@ -1,5 +1,19 @@
+@use "../../assets/styles/utils/mixins";
+
 .taskList {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: (repeat(2, 1fr));
   gap: 20px;
+
+  @include mixins.breakpoint(m) {
+    grid-template-columns: (repeat(1, 1fr));
+  }
+
+  &__placeholder {
+    font-size: 20px;
+
+    @include mixins.breakpoint(m) {
+      text-align: center;
+    }
+  }
 }

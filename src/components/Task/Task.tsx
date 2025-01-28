@@ -1,119 +1,197 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
 import TaskModel from "../../models/TaskModel";
-import InputField from "../InputField/InputField";
 import Button from "../ui/Button/Button";
+import Modal from "../ui/Modal/Modal";
 import styles from "./Task.module.scss";
+import InputField from "../InputField/InputField";
 
 interface TaskProps {
   task: TaskModel;
   onToggleCompletion: (task: TaskModel) => void;
   onDeleteTask: (taskId: string) => void;
+  onRemoveSubtask?: (subtaskId: string) => void;
   isSubtask?: boolean;
 }
 
 const Task: React.FC<TaskProps> = observer(
-  ({ task, onToggleCompletion, onDeleteTask, isSubtask = false }) => {
-    const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
-    const [isEditing, setIsEditing] = useState(false);
+  ({
+    task,
+    onToggleCompletion,
+    onDeleteTask,
+    onRemoveSubtask,
+    isSubtask = false,
+  }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAddSubtaskModalOpen, setIsAddSubtaskModalOpen] = useState(false);
     const [editedTitle, setEditedTitle] = useState(task.title);
+    const [newSubtasks, setNewSubtasks] = useState<string[]>([""]);
+    const [showMenu, setShowMenu] = useState(false);
 
-    const handleAddSubtask = () => {
-      if (newSubtaskTitle.trim()) {
-        task.addSubtask(newSubtaskTitle);
-        setNewSubtaskTitle("");
-      }
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (
+          menuRef.current &&
+          !menuRef.current.contains(event.target as Node)
+        ) {
+          setShowMenu(false);
+        }
+      };
+
+      document.addEventListener("mousedown", handleClickOutside);
+
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
+
+    const handleSaveChanges = () => {
+      task.setTitle(editedTitle);
+      setIsModalOpen(false);
     };
 
-    const handleEditTitle = () => {
-      if (isEditing && editedTitle.trim()) {
-        task.setTitle(editedTitle);
-      }
-      setIsEditing(!isEditing);
+    const handleAddSubtasks = () => {
+      newSubtasks.forEach((title) => {
+        if (title.trim()) {
+          task.addSubtask(title);
+        }
+      });
+      setNewSubtasks([]);
+      setIsAddSubtaskModalOpen(false);
     };
+
+    const handleToggleMenu = () => {
+      setShowMenu(!showMenu);
+    };
+
+    const isTaskCompleted =
+      task.isCompleted && task.subtasks.every((subtask) => subtask.isCompleted);
 
     return (
-      <div className={styles.task}>
+      <div
+        className={`${styles.task} ${isTaskCompleted ? styles.completed : ""} ${
+          isSubtask ? styles.taskSubtask : ""
+        }`}
+      >
         <div className={styles.task__header}>
+          <input
+            id={`task-checkbox-${task.id}`}
+            className={styles.task__check}
+            type="checkbox"
+            checked={task.isCompleted}
+            onChange={() => onToggleCompletion(task)}
+          />
           <label
             htmlFor={`task-checkbox-${task.id}`}
             className={styles.task__label}
-          >
-            <input
-              id={`task-checkbox-${task.id}`}
-              className={styles.task__check}
-              type="checkbox"
-              checked={task.isCompleted}
-              onChange={() => onToggleCompletion(task)}
-            />
-          </label>
-
-          {isEditing ? (
-            <input
-              type="text"
-              value={editedTitle}
-              onChange={(e) => setEditedTitle(e.target.value)}
-              onBlur={handleEditTitle}
-              onKeyDown={(e) => e.key === "Enter" && handleEditTitle()}
-              autoFocus
-            />
-          ) : (
-            <span
-              className={styles.task__title}
-              onClick={() => setIsEditing(true)}
-            >
-              {task.title}
-            </span>
-          )}
-
-          <Button
-            onClick={() => onDeleteTask(task.id)}
-            className={styles.task__del}
-          >
+          ></label>
+          <span className={styles.task__title}>{task.title}</span>
+          <button onClick={handleToggleMenu} className={styles.task__menu}>
             <svg
-              width="800px"
-              height="800px"
+              width="24"
+              height="24"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path
-                d="M18 6V16.2C18 17.8802 18 18.7202 17.673 19.362C17.3854 19.9265 16.9265 20.3854 16.362 20.673C15.7202 21 14.8802 21 13.2 21H10.8C9.11984 21 8.27976 21 7.63803 20.673C7.07354 20.3854 6.6146 19.9265 6.32698 19.362C6 18.7202 6 17.8802 6 16.2V6M4 6H20M16 6L15.7294 5.18807C15.4671 4.40125 15.3359 4.00784 15.0927 3.71698C14.8779 3.46013 14.6021 3.26132 14.2905 3.13878C13.9376 3 13.523 3 12.6936 3H11.3064C10.477 3 10.0624 3 9.70951 3.13878C9.39792 3.26132 9.12208 3.46013 8.90729 3.71698C8.66405 4.00784 8.53292 4.40125 8.27064 5.18807L8 6"
-                stroke="white"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
+              <circle cx="12" cy="12" r="1" fill="currentColor" />
+              <circle cx="12" cy="6" r="1" fill="currentColor" />
+              <circle cx="12" cy="18" r="1" fill="currentColor" />
             </svg>
-          </Button>
+          </button>
+          {showMenu && (
+            <div ref={menuRef} className={styles.task__menu__options}>
+              <Button onClick={() => setIsModalOpen(true)}>
+                Редактировать
+              </Button>
+              {!isSubtask && (
+                <Button onClick={() => setIsAddSubtaskModalOpen(true)}>
+                  Добавить подзадачу
+                </Button>
+              )}
+              <Button
+                onClick={() => {
+                  if (isSubtask && onRemoveSubtask) {
+                    onRemoveSubtask(task.id);
+                  } else {
+                    onDeleteTask(task.id);
+                  }
+                }}
+              >
+                Удалить
+              </Button>
+            </div>
+          )}
         </div>
 
-        {/* Отображаем подзадачи, если они есть */}
-        {task.subtasks.length > 0 && (
-          <div className={styles.subtasks}>
+        {!isSubtask && task.subtasks.length > 0 && (
+          <div className={styles.task__subtasks}>
             {task.subtasks.map((subtask) => (
               <Task
                 key={subtask.id}
                 task={subtask}
                 onToggleCompletion={onToggleCompletion}
                 onDeleteTask={onDeleteTask}
-                isSubtask={true} // Указываем, что это подзадача
+                onRemoveSubtask={(subtaskId) => task.removeSubtask(subtaskId)}
+                isSubtask={true}
               />
             ))}
           </div>
         )}
 
-        {/* Поле для добавления подзадачи, только если это не подзадача */}
-        {!isSubtask && (
-          <div className={styles.addSubtask}>
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <div className={styles.modalContent}>
             <InputField
-              value={newSubtaskTitle}
-              onChange={setNewSubtaskTitle}
-              placeholder="Название подзадачи"
+              value={editedTitle}
+              onChange={setEditedTitle}
+              placeholder="Название задачи"
             />
-            <Button onClick={handleAddSubtask}>+</Button>
+            <Button
+              onClick={handleSaveChanges}
+              className={styles.modalButtonSave}
+            >
+              Сохранить изменения
+            </Button>
           </div>
-        )}
+        </Modal>
+
+        <Modal
+          isOpen={isAddSubtaskModalOpen}
+          onClose={() => setIsAddSubtaskModalOpen(false)}
+        >
+          <div className={styles.modalContent}>
+            {newSubtasks.map((subtask, index) => (
+              <InputField
+                key={index}
+                value={subtask}
+                onChange={(value) => {
+                  const updatedSubtasks = [...newSubtasks];
+                  updatedSubtasks[index] = value;
+                  setNewSubtasks(updatedSubtasks);
+                }}
+                placeholder="Название подзадачи"
+              />
+            ))}
+
+            <div className={styles.modalBottom}>
+              <Button
+                onClick={() => setNewSubtasks([...newSubtasks, ""])}
+                className={styles.modalButtonSave}
+                variant="secondary"
+              >
+                Добавить еще поле
+              </Button>
+              <Button
+                onClick={handleAddSubtasks}
+                className={styles.modalButtonSave}
+              >
+                Сохранить
+              </Button>
+            </div>
+          </div>
+        </Modal>
       </div>
     );
   }

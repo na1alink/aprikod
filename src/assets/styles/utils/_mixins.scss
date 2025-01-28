@@ -11,13 +11,5 @@
     @media (max-width: 992px) {
       @content;
     }
-  } @else if $point == l {
-    @media (max-width: 1200px) {
-      @content;
-    }
-  } @else if $point == xl {
-    @media (max-width: 1600px) {
-      @content;
-    }
   }
 }

@@ -11,14 +11,20 @@ const TaskList: React.FC = observer(() => {
 
   return (
     <div className={styles.taskList}>
-      {taskStore.tasks.map((task) => (
-        <Task
-          key={task.id}
-          task={task}
-          onToggleCompletion={taskStore.toggleTaskCompletion}
-          onDeleteTask={handleDeleteTask}
-        />
-      ))}
+      {taskStore.tasks.length > 0 ? (
+        taskStore.tasks.map((task) => (
+          <Task
+            key={task.id}
+            task={task}
+            onToggleCompletion={taskStore.toggleTaskCompletion}
+            onDeleteTask={handleDeleteTask}
+          />
+        ))
+      ) : (
+        <div className={styles.taskList__placeholder}>
+          <p>Задач пока нет. Добавьте новую задачу!</p>
+        </div>
+      )}
     </div>
   );
 });
