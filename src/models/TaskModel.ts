@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { v4 as uuidv4 } from "uuid";
 
 export interface TaskData {
   id: string;
@@ -15,7 +16,7 @@ class TaskModel {
   parent?: TaskModel;
 
   constructor(title: string, parent?: TaskModel, subtasks: TaskModel[] = []) {
-    this.id = Math.random().toString(36).substr(2, 9);
+    this.id = uuidv4();
     this.title = title;
     this.isCompleted = false;
     this.subtasks = subtasks.map((subtask) => {

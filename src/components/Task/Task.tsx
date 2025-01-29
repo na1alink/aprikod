@@ -5,6 +5,7 @@ import Button from "../ui/Button/Button";
 import Modal from "../ui/Modal/Modal";
 import styles from "./Task.module.scss";
 import InputField from "../InputField/InputField";
+import taskStore from "../../stores/taskStore";
 
 interface TaskProps {
   task: TaskModel;
@@ -51,6 +52,7 @@ const Task: React.FC<TaskProps> = observer(
 
     const handleSaveChanges = () => {
       task.setTitle(editedTitle);
+      taskStore.saveTasksToLocalStorage();
       setIsModalOpen(false);
     };
 
@@ -62,6 +64,8 @@ const Task: React.FC<TaskProps> = observer(
       });
       setNewSubtasks([]);
       setIsAddSubtaskModalOpen(false);
+
+      taskStore.saveTasksToLocalStorage();
     };
 
     const handleToggleMenu = () => {
