@@ -1,50 +1,60 @@
-# React + TypeScript + Vite
+# Трекер задач с подзадачами
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Обзор
 
-Currently, two official plugins are available:
+Это приложение для отслеживания задач, написанное с использованием Vite, TypeScript, React, MobX и SCSS. Приложение позволяет создавать задачи, добавлять к ним подзадачи, помечать их как выполненные, редактировать задачи и удалять их. Все изменения сохраняются локально в хранилище браузера, что обеспечивает сохранение состояния при перезагрузке страницы
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Возможности
 
-## Expanding the ESLint configuration
+- **Создание задач**: Создавайте новые задачи с заголовками.
+- **Управление подзадачами**: Добавляйте подзадачи к существующим задачам.
+- **Пометка выполненных задач**: Помечайте задачи и подзадачи как выполненные.
+- **Редактирование задач**: Редактируйте заголовки задач.
+- **Удаление задач**: Удаляйте задачи и подзадачи.
+- **Сохранение состояния**: Изменения сохраняются в локальном хранилище, поэтому они сохраняются после перезагрузки страницы.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Используемые технологии
 
-- Configure the top-level `parserOptions` property like this:
+- **Vite**: Быстрый инструмент сборки для современной веб-разработки.
+- **TypeScript**: Язык программирования, который добавляет статическую типизацию к JavaScript.
+- **React**: Популярная библиотека для создания пользовательских интерфейсов.
+- **MobX**: Библиотека для управления состоянием приложения.
+- **SCSS**: Расширение CSS с поддержкой переменных, вложенных правил и других удобных функций.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Установка и запуск
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### Требования
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+- Установленный [Node.js](https://nodejs.org/) версии 14 или выше.
+- Установленный [npm](https://www.npmjs.com/) или [yarn](https://yarnpkg.com/).
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+### Установка зависимостей
+
+1. Клонирование репозитория
+
+`git clone https://github.com/na1alink/aprikod`
+
+2. Переход в директорию aprikod
+
+`cd aprikod`
+
+3. Установка зависимостей
+
+`npm install`
+
+6. Запуск сервера разработки
+
+`npm run dev`
+
+
+
+## Доступные скрипты
+
+### `npm run dev`
+Запуск сервера разработки, для локальной разработки
+
+### `npm run build`
+Сначала выполняется сборка TypeScript, чтобы убедиться, что все типы правильно проверены и скомпилированы. Затем Vite собирает приложение для продакшена, оптимизируя и минифицируя код
+
+### `npm run preview`
+Запускает локальный сервер для предпросмотра собранного приложения
