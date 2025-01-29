@@ -12,6 +12,7 @@ interface TaskProps {
   onDeleteTask: (taskId: string) => void;
   onRemoveSubtask?: (subtaskId: string) => void;
   isSubtask?: boolean;
+  depth?: number;
 }
 
 const Task: React.FC<TaskProps> = observer(
@@ -21,6 +22,7 @@ const Task: React.FC<TaskProps> = observer(
     onDeleteTask,
     onRemoveSubtask,
     isSubtask = false,
+    depth = 0,
   }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAddSubtaskModalOpen, setIsAddSubtaskModalOpen] = useState(false);
@@ -73,7 +75,7 @@ const Task: React.FC<TaskProps> = observer(
       <div
         className={`${styles.task} ${isTaskCompleted ? styles.completed : ""} ${
           isSubtask ? styles.taskSubtask : ""
-        }`}
+        } ${styles[`depth-${depth}`]} `}
       >
         <div className={styles.task__header}>
           <input
@@ -106,11 +108,9 @@ const Task: React.FC<TaskProps> = observer(
               <Button onClick={() => setIsModalOpen(true)}>
                 Редактировать
               </Button>
-              {!isSubtask && (
-                <Button onClick={() => setIsAddSubtaskModalOpen(true)}>
-                  Добавить подзадачу
-                </Button>
-              )}
+              <Button onClick={() => setIsAddSubtaskModalOpen(true)}>
+                Добавить подзадачу
+              </Button>
               <Button
                 onClick={() => {
                   if (isSubtask && onRemoveSubtask) {
@@ -126,7 +126,7 @@ const Task: React.FC<TaskProps> = observer(
           )}
         </div>
 
-        {!isSubtask && task.subtasks.length > 0 && (
+        {task.subtasks.length > 0 && (
           <div className={styles.task__subtasks}>
             {task.subtasks.map((subtask) => (
               <Task
@@ -136,6 +136,7 @@ const Task: React.FC<TaskProps> = observer(
                 onDeleteTask={onDeleteTask}
                 onRemoveSubtask={(subtaskId) => task.removeSubtask(subtaskId)}
                 isSubtask={true}
+                depth={depth + 1}
               />
             ))}
           </div>

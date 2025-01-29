@@ -24,24 +24,25 @@ class TaskStore {
     localStorage.setItem(TASKS_STORAGE_KEY, tasksJson);
   }
 
-  parseTaskData(taskData: TaskData): TaskModel {
-    const task = new TaskModel(taskData.title);
+  parseTaskData(taskData: TaskData, parent?: TaskModel): TaskModel {
+    const task = new TaskModel(taskData.title, parent);
     task.id = taskData.id;
     task.isCompleted = taskData.isCompleted;
+
     task.subtasks = taskData.subtasks.map((subtaskData) =>
-      this.parseTaskData(subtaskData)
+      this.parseTaskData(subtaskData, task)
     );
+
     return task;
   }
 
   addTask(title: string, subtasks: TaskModel[] = []) {
-    this.tasks.push(new TaskModel(title, subtasks));
+    this.tasks.push(new TaskModel(title, undefined, subtasks));
     this.saveTasksToLocalStorage();
   }
 
   toggleTaskCompletion(task: TaskModel) {
     task.toggleCompletion();
-    task.checkSubtasksCompletion();
     this.saveTasksToLocalStorage();
   }
 
@@ -52,6 +53,7 @@ class TaskStore {
 
   clearAllTasks() {
     this.tasks = [];
+    this.saveTasksToLocalStorage();
   }
 }
 

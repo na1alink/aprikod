@@ -12,12 +12,17 @@ class TaskModel {
   title: string;
   isCompleted: boolean;
   subtasks: TaskModel[];
+  parent?: TaskModel;
 
-  constructor(title: string, subtasks: TaskModel[] = []) {
+  constructor(title: string, parent?: TaskModel, subtasks: TaskModel[] = []) {
     this.id = Math.random().toString(36).substr(2, 9);
     this.title = title;
     this.isCompleted = false;
-    this.subtasks = subtasks;
+    this.subtasks = subtasks.map((subtask) => {
+      subtask.setParent(this);
+      return subtask;
+    });
+    this.parent = parent;
     makeAutoObservable(this);
   }
 
@@ -26,9 +31,38 @@ class TaskModel {
   }
 
   addSubtask(title: string) {
-    this.subtasks.push(new TaskModel(title));
+    const subtask = new TaskModel(title, this);
+    this.subtasks.push(subtask);
   }
 
+  removeSubtask(subtaskId: string) {
+    this.subtasks = this.subtasks.filter((subtask) => subtask.id !== subtaskId);
+  }
+
+  setParent(parent: TaskModel | undefined) {
+    this.parent = parent;
+  }
+
+  setCompleted(value: boolean) {
+    if (this.isCompleted !== value) {
+      this.isCompleted = value;
+      if (value) {
+        this.subtasks.forEach((subtask) => subtask.setCompleted(value));
+      }
+      if (this.parent) {
+        this.parent.checkSubtasksCompletion();
+      }
+    }
+  }
+
+  toggleCompletion() {
+    const newValue = !this.isCompleted;
+    this.setCompleted(newValue);
+
+    if (this.parent) {
+      this.parent.checkSubtasksCompletion();
+    }
+  }
   checkSubtasksCompletion() {
     const allSubtasksCompleted = this.subtasks.every(
       (subtask) => subtask.isCompleted
@@ -38,32 +72,11 @@ class TaskModel {
     } else if (!allSubtasksCompleted && this.isCompleted) {
       this.setCompleted(false);
     }
-  }
 
-  toggleCompletion() {
-    this.isCompleted = !this.isCompleted;
-    if (this.isCompleted) {
-      this.subtasks.forEach((subtask) => subtask.setCompleted(true));
-    } else {
-      this.subtasks.forEach((subtask) => subtask.setCompleted(false));
-    }
-    this.checkSubtasksCompletion();
-  }
-
-  setCompleted(value: boolean) {
-    this.isCompleted = value;
-    if (value) {
-      this.subtasks.forEach((subtask) => subtask.setCompleted(value));
-    } else {
-      this.subtasks.forEach((subtask) => subtask.setCompleted(value));
-      this.checkSubtasksCompletion();
+    if (this.parent) {
+      this.parent.checkSubtasksCompletion();
     }
   }
-
-  removeSubtask(subtaskId: string) {
-    this.subtasks = this.subtasks.filter((subtask) => subtask.id !== subtaskId);
-  }
-
   toJSON(): TaskData {
     return {
       id: this.id,

@@ -1,15 +1,16 @@
 .task {
   border-radius: 0px 10px 10px 0px;
-  // border: 1px solid var(--primary-color);
+
   border-left: 14px solid var(--primary-color);
   background-color: rgba(152, 251, 152, 0.4);
   padding: 20px;
 
   position: relative;
 
+  transition: 0.3s ease-in;
+
   &.completed {
     border-left: 14px solid var(--secondary-color);
-    opacity: 0.5;
   }
 
   &__header {
@@ -33,6 +34,7 @@
 
     flex-grow: 0;
     border: 1px solid var(--primary-color);
+
     background-color: #fff;
     border-radius: 4px;
 
@@ -88,10 +90,10 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    margin-top: 20px;
+    margin-top: 10px;
     margin-left: 20px;
 
-    background-color: var(--white);
+    // background-color: var(--white);
     padding: 10px;
     border-radius: 0px 10px 10px 0px;
   }
@@ -133,4 +135,16 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
+}
+.task.depth-0 .task__subtasks {
+  background-color: white;
+}
+.task.depth-1 .task__subtasks {
+  background-color: rgba(152, 251, 152, 0.3);
+}
+.task.depth-2 .task__subtasks {
+  background-color: white;
+}
+.task.depth-3 .task__subtasks {
+  background-color: rgba(152, 251, 152, 0.2);
 }
