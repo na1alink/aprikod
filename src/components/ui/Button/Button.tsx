@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Button.module.scss";
+import "./Button.scss";
 
 interface ButtonProps {
   onClick: () => void;
@@ -18,10 +18,10 @@ const Button: React.FC<ButtonProps> = ({
   disabled = false,
   type = "button",
 }) => {
-  const variantClass = styles[`button--${variant}`] || "";
+  const variantClass = `button--${variant}`;
   return (
     <button
-      className={`${styles.button} ${variantClass} ${className}`}
+      className={`button ${variantClass} ${className}`}
       onClick={onClick}
       disabled={disabled}
       type={type}

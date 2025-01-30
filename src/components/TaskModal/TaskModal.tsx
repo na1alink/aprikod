@@ -2,7 +2,6 @@ import React from "react";
 import Button from "../ui/Button/Button";
 import Modal from "../ui/Modal/Modal";
 import InputField from "../InputField/InputField";
-import styles from "./TaskModal.module.scss";
 
 const TaskModal: React.FC<{
   isOpen: boolean;
@@ -13,13 +12,13 @@ const TaskModal: React.FC<{
 }> = ({ isOpen, onClose, editedTitle, setEditedTitle, handleSaveChanges }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className={styles.modalContent}>
+      <div className="modalContent">
         <InputField
           value={editedTitle}
           onChange={setEditedTitle}
           placeholder="Название задачи"
         />
-        <Button onClick={handleSaveChanges} className={styles.modalButtonSave}>
+        <Button onClick={handleSaveChanges} className="modalButtonSave">
           Сохранить изменения
         </Button>
       </div>

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import styles from "./Modal.module.scss";
+import "./Modal.scss";
 
 interface ModalProps {
   isOpen: boolean;
@@ -35,9 +35,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   }
 
   return (
-    <div className={styles.overlay} onClick={handleOverlayClick}>
-      <div className={styles.modal}>
-        <button className={styles.closeButton} onClick={onClose}>
+    <div className="overlay" onClick={handleOverlayClick}>
+      <div className="modal">
+        <button className="closeButton" onClick={onClose}>
           <svg
             width="24px"
             height="24px"
@@ -57,7 +57,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
             </g>
           </svg>
         </button>
-        <div className={styles.content}>{children}</div>
+        <div className="content">{children}</div>
       </div>
     </div>
   );
