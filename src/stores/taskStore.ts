@@ -14,8 +14,16 @@ class TaskStore {
   loadTasksFromLocalStorage() {
     const tasksJson = localStorage.getItem(TASKS_STORAGE_KEY);
     if (tasksJson) {
-      const tasksData: TaskData[] = JSON.parse(tasksJson);
-      this.tasks = tasksData.map((taskData) => this.parseTaskData(taskData));
+      try {
+        const tasksData: TaskData[] = JSON.parse(tasksJson);
+        console.log("Loaded tasks data:", tasksData);
+        this.tasks = tasksData.map((taskData) => this.parseTaskData(taskData));
+      } catch (error) {
+        console.error("Error loading tasks from localStorage", error);
+        this.tasks = [];
+      }
+    } else {
+      console.log("No tasks found in localStorage");
     }
   }
 
@@ -41,11 +49,28 @@ class TaskStore {
     this.saveTasksToLocalStorage();
   }
 
-  toggleTaskCompletion(task: TaskModel) {
-    task.toggleCompletion();
-    this.saveTasksToLocalStorage();
-  }
+  toggleTaskCompletion(taskId: string) {
+    const findTaskById = (tasks: TaskModel[], id: string): TaskModel | null => {
+      for (const task of tasks) {
+        if (task.id === id) {
+          return task;
+        }
+        const subtask = findTaskById(task.subtasks, id);
+        if (subtask) {
+          return subtask;
+        }
+      }
+      return null;
+    };
 
+    const task = findTaskById(this.tasks, taskId);
+    if (task) {
+      task.toggleCompletion();
+      this.saveTasksToLocalStorage();
+    } else {
+      console.error(`Task with id ${taskId} not found`);
+    }
+  }
   removeTask(taskId: string) {
     this.tasks = this.tasks.filter((task) => task.id !== taskId);
     this.saveTasksToLocalStorage();

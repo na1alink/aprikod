@@ -9,6 +9,10 @@ const TaskList: React.FC = observer(() => {
     taskStore.removeTask(taskId);
   };
 
+  const handleToggleCompletion = (taskId: string) => {
+    taskStore.toggleTaskCompletion(taskId);
+  };
+
   return (
     <div className={styles.taskList}>
       {taskStore.tasks.length > 0 ? (
@@ -16,7 +20,7 @@ const TaskList: React.FC = observer(() => {
           <Task
             key={task.id}
             task={task}
-            onToggleCompletion={taskStore.toggleTaskCompletion}
+            onToggleCompletion={handleToggleCompletion}
             onDeleteTask={handleDeleteTask}
           />
         ))

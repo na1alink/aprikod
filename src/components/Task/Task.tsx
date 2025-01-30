@@ -1,21 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
-import TaskModel from "../../models/TaskModel";
-import Button from "../ui/Button/Button";
-import Modal from "../ui/Modal/Modal";
-import styles from "./Task.module.scss";
-import InputField from "../InputField/InputField";
 import taskStore from "../../stores/taskStore";
+import TaskModel from "../../models/TaskModel";
+
+import styles from "./Task.module.scss";
+import SubtasksList from "../SubtasksList/SubtasksList";
+import TaskModal from "../TaskModal/TaskModal";
+import AddSubtaskModal from "../AddSubtaskModal/AddSubtaskModal";
+import TaskMenu from "../TaskMenu/TaskMenu";
 
 interface TaskProps {
   task: TaskModel;
-  onToggleCompletion: (task: TaskModel) => void;
+  onToggleCompletion: (taskId: string) => void;
   onDeleteTask: (taskId: string) => void;
   onRemoveSubtask?: (subtaskId: string) => void;
   isSubtask?: boolean;
   depth?: number;
 }
-
 const Task: React.FC<TaskProps> = observer(
   ({
     task,
@@ -30,7 +31,6 @@ const Task: React.FC<TaskProps> = observer(
     const [editedTitle, setEditedTitle] = useState(task.title);
     const [newSubtasks, setNewSubtasks] = useState<string[]>([""]);
     const [showMenu, setShowMenu] = useState(false);
-
     const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -42,9 +42,7 @@ const Task: React.FC<TaskProps> = observer(
           setShowMenu(false);
         }
       };
-
       document.addEventListener("mousedown", handleClickOutside);
-
       return () => {
         document.removeEventListener("mousedown", handleClickOutside);
       };
@@ -64,7 +62,6 @@ const Task: React.FC<TaskProps> = observer(
       });
       setNewSubtasks([]);
       setIsAddSubtaskModalOpen(false);
-
       taskStore.saveTasksToLocalStorage();
     };
 
@@ -87,7 +84,7 @@ const Task: React.FC<TaskProps> = observer(
             className={styles.task__check}
             type="checkbox"
             checked={task.isCompleted}
-            onChange={() => onToggleCompletion(task)}
+            onChange={() => onToggleCompletion(task.id)}
           />
           <label
             htmlFor={`task-checkbox-${task.id}`}
@@ -108,95 +105,40 @@ const Task: React.FC<TaskProps> = observer(
             </svg>
           </button>
           {showMenu && (
-            <div ref={menuRef} className={styles.task__menu__options}>
-              <Button onClick={() => setIsModalOpen(true)}>
-                Редактировать
-              </Button>
-              <Button onClick={() => setIsAddSubtaskModalOpen(true)}>
-                Добавить подзадачу
-              </Button>
-              <Button
-                onClick={() => {
-                  if (isSubtask && onRemoveSubtask) {
-                    onRemoveSubtask(task.id);
-                  } else {
-                    onDeleteTask(task.id);
-                  }
-                }}
-              >
-                Удалить
-              </Button>
-            </div>
+            <TaskMenu
+              task={task}
+              menuRef={menuRef}
+              setIsModalOpen={setIsModalOpen}
+              setIsAddSubtaskModalOpen={setIsAddSubtaskModalOpen}
+              onRemoveSubtask={onRemoveSubtask}
+              onDeleteTask={onDeleteTask}
+              isSubtask={isSubtask}
+            />
           )}
         </div>
-
         {task.subtasks.length > 0 && (
-          <div className={styles.task__subtasks}>
-            {task.subtasks.map((subtask) => (
-              <Task
-                key={subtask.id}
-                task={subtask}
-                onToggleCompletion={onToggleCompletion}
-                onDeleteTask={onDeleteTask}
-                onRemoveSubtask={(subtaskId) => task.removeSubtask(subtaskId)}
-                isSubtask={true}
-                depth={depth + 1}
-              />
-            ))}
-          </div>
+          <SubtasksList
+            task={task}
+            onToggleCompletion={onToggleCompletion}
+            onDeleteTask={onDeleteTask}
+            onRemoveSubtask={(subtaskId) => task.removeSubtask(subtaskId)}
+            depth={depth + 1}
+          />
         )}
-
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          <div className={styles.modalContent}>
-            <InputField
-              value={editedTitle}
-              onChange={setEditedTitle}
-              placeholder="Название задачи"
-            />
-            <Button
-              onClick={handleSaveChanges}
-              className={styles.modalButtonSave}
-            >
-              Сохранить изменения
-            </Button>
-          </div>
-        </Modal>
-
-        <Modal
+        <TaskModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          editedTitle={editedTitle}
+          setEditedTitle={setEditedTitle}
+          handleSaveChanges={handleSaveChanges}
+        />
+        <AddSubtaskModal
           isOpen={isAddSubtaskModalOpen}
           onClose={() => setIsAddSubtaskModalOpen(false)}
-        >
-          <div className={styles.modalContent}>
-            {newSubtasks.map((subtask, index) => (
-              <InputField
-                key={index}
-                value={subtask}
-                onChange={(value) => {
-                  const updatedSubtasks = [...newSubtasks];
-                  updatedSubtasks[index] = value;
-                  setNewSubtasks(updatedSubtasks);
-                }}
-                placeholder="Название подзадачи"
-              />
-            ))}
-
-            <div className={styles.modalBottom}>
-              <Button
-                onClick={() => setNewSubtasks([...newSubtasks, ""])}
-                className={styles.modalButtonSave}
-                variant="secondary"
-              >
-                Добавить еще поле
-              </Button>
-              <Button
-                onClick={handleAddSubtasks}
-                className={styles.modalButtonSave}
-              >
-                Сохранить
-              </Button>
-            </div>
-          </div>
-        </Modal>
+          newSubtasks={newSubtasks}
+          setNewSubtasks={setNewSubtasks}
+          handleAddSubtasks={handleAddSubtasks}
+        />
       </div>
     );
   }

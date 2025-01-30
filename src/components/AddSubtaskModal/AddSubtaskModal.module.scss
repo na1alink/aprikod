@@ -1,0 +1,17 @@
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modalBottom {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.modalButtonSave {
+  padding: 10px;
+
+  font-size: 18px;
+}
