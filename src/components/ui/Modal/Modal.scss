@@ -63,4 +63,8 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
+
+  @include mixins.breakpoint(s) {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }
