@@ -3,13 +3,8 @@
 .header {
   padding: 40px 0;
 
-  margin-bottom: 60px;
-
   background-color: rgba(152, 251, 152, 0.4);
 
-  @include mixins.breakpoint(m) {
-    margin-bottom: 20px;
-  }
   @include mixins.breakpoint(s) {
     padding: 20px 0;
   }

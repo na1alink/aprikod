@@ -45,7 +45,8 @@ class TaskStore {
   }
 
   addTask(title: string, subtasks: TaskModel[] = []) {
-    this.tasks.push(new TaskModel(title, undefined, subtasks));
+    const newTask = new TaskModel(title, undefined, subtasks);
+    this.tasks.push(newTask);
     this.saveTasksToLocalStorage();
   }
 

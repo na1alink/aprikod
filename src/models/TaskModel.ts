@@ -34,6 +34,7 @@ class TaskModel {
   addSubtask(title: string) {
     const subtask = new TaskModel(title, this);
     this.subtasks.push(subtask);
+    this.checkSubtasksCompletion();
   }
 
   removeSubtask(subtaskId: string) {
@@ -50,6 +51,7 @@ class TaskModel {
       if (value) {
         this.subtasks.forEach((subtask) => subtask.setCompleted(value));
       }
+
       if (this.parent) {
         this.parent.checkSubtasksCompletion();
       }
@@ -64,6 +66,7 @@ class TaskModel {
       this.parent.checkSubtasksCompletion();
     }
   }
+
   checkSubtasksCompletion() {
     const allSubtasksCompleted = this.subtasks.every(
       (subtask) => subtask.isCompleted
@@ -78,6 +81,7 @@ class TaskModel {
       this.parent.checkSubtasksCompletion();
     }
   }
+
   toJSON(): TaskData {
     return {
       id: this.id,

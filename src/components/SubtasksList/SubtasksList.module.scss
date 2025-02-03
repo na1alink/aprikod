@@ -1,10 +1,18 @@
+@use "../../assets/styles/utils/mixins";
+
 .subtasks__link {
   display: flex;
   flex-direction: column;
   gap: 5px;
   margin-top: 10px;
-  margin-left: 20px;
+  margin-left: 30px;
 
   padding: 10px;
+  padding-right: 0;
   border-radius: 0px 10px 10px 0px;
+
+  @include mixins.breakpoint(s) {
+    margin-left: 10px;
+    margin-top: 0px;
+  }
 }

@@ -7,6 +7,8 @@ import LayoutContainer from "./components/layout/LayoutContainer/LayoutContainer
 import AddTask from "./components/AddTask/AddTask";
 import TaskModel from "./models/TaskModel";
 
+import styles from "./App.module.scss";
+
 const App: React.FC = () => {
   const handleAddTask = (title: string, subtasks: TaskModel[] = []) => {
     taskStore.addTask(title, subtasks);
@@ -16,7 +18,7 @@ const App: React.FC = () => {
     <>
       <Header />
       <main>
-        <section>
+        <section className={styles.content}>
           <LayoutContainer>
             <AddTask onAddTask={handleAddTask} />
             <TaskList />
